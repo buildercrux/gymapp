@@ -6,6 +6,7 @@ const hasSmtpConfig = Boolean(
 );
 
 let transporter = null;
+let transporterVerified = false;
 
 const getTransporter = () => {
   if (!hasSmtpConfig) {
@@ -25,6 +26,7 @@ const getTransporter = () => {
         rejectUnauthorized: env.smtpTlsRejectUnauthorized,
       },
     });
+    transporterVerified = false;
   }
 
   return transporter;
@@ -56,7 +58,12 @@ export const sendOtpEmail = async ({ to, code }) => {
 
   const safeCode = String(code || "").trim();
 
-  await mailer.sendMail({
+  if (!transporterVerified) {
+    await mailer.verify();
+    transporterVerified = true;
+  }
+
+  const info = await mailer.sendMail({
     from: env.smtpFrom,
     to,
     subject: "BuilderCrux - OTP Verification",
@@ -85,6 +92,16 @@ export const sendOtpEmail = async ({ to, code }) => {
       </div>
     `,
   });
+
+  if (process.env.NODE_ENV !== "test") {
+    // eslint-disable-next-line no-console
+    console.log("OTP email send result", {
+      messageId: info?.messageId || null,
+      accepted: info?.accepted || [],
+      rejected: info?.rejected || [],
+      response: info?.response || null,
+    });
+  }
 
   return { delivered: true, mode: "smtp" };
 };
