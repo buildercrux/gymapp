@@ -32,6 +32,10 @@ const createApp = () => {
     res.json({ success: true, message: "Gym management API is healthy" });
   });
 
+  app.get(["/favicon.ico", "/favicon.png"], (_req, res) => {
+    res.status(204).end();
+  });
+
   app.use("/api", routes);
 
   if (hasFrontendBuild) {
