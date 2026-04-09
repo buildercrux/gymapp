@@ -1,8 +1,8 @@
-import { createApp } from "./app.js";
-import { env } from "./config/env.js";
-import { connectDatabase } from "./db/mongoose.js";
+import { createApp } from "./src/app.js";
+import { env } from "./src/config/env.js";
+import { connectDatabase } from "./src/db/mongoose.js";
 import { createServer } from "http";
-import { initSocket } from "./realtime/socket.js";
+import { initSocket } from "./src/realtime/socket.js";
 
 const startServer = async () => {
   await connectDatabase();
