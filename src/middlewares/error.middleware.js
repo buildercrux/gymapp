@@ -10,6 +10,10 @@ export const notFoundHandler = (req, res) => {
 export const errorHandler = (error, _req, res, _next) => {
   const statusCode = error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
 
+  if (process.env.NODE_ENV !== "test") {
+    console.error(error);
+  }
+
   res.status(statusCode).json({
     success: false,
     message: error.message || "Internal server error",

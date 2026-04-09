@@ -6,6 +6,7 @@ import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
 import { env } from "./config/env.js";
+import { ensureDatabaseConnection } from "./db/mongoose.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middlewares/error.middleware.js";
 
@@ -36,6 +37,14 @@ const createApp = () => {
     res.status(204).end();
   });
 
+  app.use("/api", async (_req, _res, next) => {
+    try {
+      await ensureDatabaseConnection();
+      next();
+    } catch (error) {
+      next(error);
+    }
+  });
   app.use("/api", routes);
 
   if (hasFrontendBuild) {

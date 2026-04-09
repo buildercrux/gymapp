@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { env } from "../config/env.js";
 import { User } from "../models/User.js";
 
+let connectPromise = null;
+
 const dropIndexIfPresent = async (collection, name) => {
   const indexes = await collection.indexes();
   const exists = indexes.some((index) => index.name === name);
@@ -11,9 +13,30 @@ const dropIndexIfPresent = async (collection, name) => {
   }
 };
 
+export const ensureDatabaseConnection = async () => {
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
+  if (!connectPromise) {
+    mongoose.set("strictQuery", true);
+    connectPromise = mongoose
+      .connect(env.mongoUri, {
+        autoIndex: true,
+        serverSelectionTimeoutMS: 10_000,
+      })
+      .catch((error) => {
+        connectPromise = null;
+        throw error;
+      });
+  }
+
+  await connectPromise;
+  return mongoose.connection;
+};
+
 export const connectDatabase = async () => {
-  mongoose.set("strictQuery", true);
-  await mongoose.connect(env.mongoUri, { autoIndex: true });
+  await ensureDatabaseConnection();
   const collection = User.collection;
 
   // Rebuild contact indexes in a safe order so old null values do not block startup.
