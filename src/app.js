@@ -9,7 +9,7 @@ import { env } from "./config/env.js";
 import routes from "./routes/index.js";
 import { errorHandler, notFoundHandler } from "./middlewares/error.middleware.js";
 
-export const createApp = () => {
+const createApp = () => {
   const app = express();
   const currentFile = fileURLToPath(import.meta.url);
   const currentDir = path.dirname(currentFile);
