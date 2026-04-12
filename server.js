@@ -12,6 +12,7 @@ const startServer = async () => {
   httpServer.listen(env.port, () => {
     console.log(`Backend running on port ${env.port}`);
   });
+
 };
 
 startServer().catch((error) => {

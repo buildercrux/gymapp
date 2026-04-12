@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as planController from "../controllers/plan.controller.js";
 import { authenticate, authorize } from "../middlewares/auth.middleware.js";
+import { requireActiveOwnerSubscription } from "../middlewares/subscription.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { bookingSchema, createPlanSchema, planIdSchema, updatePlanSchema } from "../validators/plan.validator.js";
@@ -12,6 +13,7 @@ router.post(
   "/create",
   authenticate,
   authorize("owner", "admin"),
+  requireActiveOwnerSubscription,
   validate(createPlanSchema),
   asyncHandler(planController.createPlan),
 );
@@ -19,6 +21,7 @@ router.put(
   "/:planId",
   authenticate,
   authorize("owner", "admin"),
+  requireActiveOwnerSubscription,
   validate(updatePlanSchema),
   asyncHandler(planController.updatePlan),
 );
@@ -26,6 +29,7 @@ router.delete(
   "/:planId",
   authenticate,
   authorize("owner", "admin"),
+  requireActiveOwnerSubscription,
   validate(planIdSchema),
   asyncHandler(planController.removePlan),
 );

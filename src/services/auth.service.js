@@ -5,6 +5,7 @@ import { AppError } from "../errors/AppError.js";
 import { Otp } from "../models/Otp.js";
 import { Session } from "../models/Session.js";
 import { User } from "../models/User.js";
+import { OwnerSubscription } from "../models/OwnerSubscription.js";
 import { isEmailDeliveryConfigured, sendOtpEmail } from "./email.service.js";
 import { generateOtpCode } from "./otp.service.js";
 import { hashPassword, verifyPassword } from "./password.service.js";
@@ -130,6 +131,14 @@ export const completeSignup = async ({ email, code, phone, password, fullName, r
     passwordHash: hashPassword(password),
     lastLoginAt: new Date(),
   });
+
+  if (user.role === ROLES.OWNER) {
+    await OwnerSubscription.updateOne(
+      { owner: user._id },
+      { $setOnInsert: { owner: user._id, status: "pending" } },
+      { upsert: true },
+    );
+  }
 
   return createSessionForUser(user);
 };

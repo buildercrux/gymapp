@@ -11,6 +11,7 @@ import specialistRoutes from "./specialist.routes.js";
 import workoutRoutes from "./workout.routes.js";
 import couponRoutes from "./coupon.routes.js";
 import transactionRoutes from "./transaction.routes.js";
+import billingRoutes from "./billing.routes.js";
 
 const router = Router();
 
@@ -20,6 +21,7 @@ router.use("/gym", gymRoutes);
 router.use("/plans", planRoutes);
 router.use("/coupons", couponRoutes);
 router.use("/transactions", transactionRoutes);
+router.use("/billing", billingRoutes);
 router.use("/masters", masterRoutes);
 router.use("/", workoutRoutes);
 router.use("/exercises", exerciseRoutes);
